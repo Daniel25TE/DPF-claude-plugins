@@ -1,0 +1,13 @@
+{
+  "name": "ship-it",
+  "version": "1.0.0",
+  "description": "Full PR workflow: branch, commit, rebase, push, open PR, and post to Slack",
+  "keywords": [
+    "pr",
+    "pull-request",
+    "git",
+    "workflow",
+    "slack",
+    "jira"
+  ]
+}
