@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "DPF-claude-plugins",
+  "description": "Internal Claude Code plugin marketplace for the DPF team",
+  "owner": {
+    "name": "DPF Team",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "ship-it",
+      "description": "Full PR workflow: branch, commit, rebase, push, open PR, and post to Slack",
+      "version": "1.0.0",
+      "author": {
+        "name": "DPF Team",
+        "email": ""
+      },
+      "source": "./plugins/ship-it",
+      "category": "productivity"
+    }
+  ]
+}
