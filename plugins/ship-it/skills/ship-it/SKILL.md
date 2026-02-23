@@ -9,6 +9,8 @@ allowed-tools:
   - Bash(gh *)
   - mcp__slack__slack_post_message
   - mcp__atlassian__getJiraIssue
+  - mcp__atlassian__getAccessibleAtlassianResources
+  - mcp__atlassian__addWorklogToJiraIssue
 ---
 
 # Ship It — DPF PR Workflow
@@ -132,10 +134,43 @@ Use the `mcp__slack__slack_post_message` tool with:
 
 ---
 
-## Step 8: Confirm Completion
+## Step 8: Log Time in Jira
+
+**Skip this step if no Jira task ID was provided.**
+
+1. Use `mcp__atlassian__getAccessibleAtlassianResources` to get the `cloudId`.
+2. Use `mcp__atlassian__getJiraIssue` with the Jira task ID to retrieve:
+   - `timeoriginalestimate` (original estimate in seconds)
+   - `timespent` (time already logged in seconds)
+3. Analyze the git log to estimate time worked on this PR:
+   - Run `git log --format="%ai" <branch>` to get commit timestamps
+   - Calculate the span between the earliest and latest commit on the branch
+   - If only one commit exists, use a heuristic based on diff size: small change (<50 lines) = 30m, medium (50–200 lines) = 1h, large (>200 lines) = 2h
+4. Convert all times from seconds to a human-readable format (e.g., `2h 30m`).
+5. Display the following to the user:
+
+```
+📋 Jira Time Tracking for [JIRA-KEY]:
+- Original estimated time for this task: Xh
+- Time already logged:                   Xh Xm
+- Suggested time to log for this PR:     Xh Xm
+
+Would you like to accept the suggested time, or enter a specific time?
+(Type "yes" to accept, or provide a value like "2h", "45m", "1h 30m")
+```
+
+6. Wait for the user's response:
+   - If "yes" or confirmed → use the suggested time
+   - If a specific time is given → use that value
+7. Log the time using `mcp__atlassian__addWorklogToJiraIssue` with the accepted time and the Jira task ID.
+
+---
+
+## Step 9: Confirm Completion
 
 Report to the user:
 - Branch name
 - Commit message title
 - PR URL
 - Confirmation that Slack was notified
+- Confirmation that time was logged in Jira (if applicable), including the amount logged
