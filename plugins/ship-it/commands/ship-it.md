@@ -23,14 +23,23 @@ Ask the user for the Jira task ID (e.g., `DPF-6944`). Store it — it will be us
 
 Check the current branch with `git branch --show-current`.
 
-**If on `master`:**
-1. Stash changes: `git stash`
+There are only two valid starting scenarios:
+
+**Scenario A — Starting from master (clean slate):**
+The user is on master and about to start a new task from scratch.
+1. Stash any uncommitted changes: `git stash`
 2. Pull latest: `git pull origin master`
 3. Create a new branch named after the work being done (kebab-case, descriptive)
-4. Restore: `git stash pop`
+4. Restore stashed changes: `git stash pop`
+5. **Remember: branch was freshly created from master → skip rebase in Step 4.**
 
-**If already on a feature branch:**
+**Scenario B — Already on a feature branch (work in progress):**
+The user already created a branch and has been working on it.
 - No branch changes needed. Proceed to Step 2.
+- **Remember: branch existed before this workflow → rebase is required in Step 4.**
+
+> Any other starting point (stale/unrelated branch, detached HEAD, etc.) is not supported.
+> If this is detected, warn the user and stop.
 
 ---
 
@@ -72,12 +81,17 @@ EOF
 
 ## Step 4: Sync with Latest Master
 
-**Only if on a feature branch (not master):**
+**Only if Scenario B from Step 1 (branch already existed before this workflow):**
+
+The branch was created some time ago and master may have moved forward — rebase is needed to keep history clean before opening the PR.
 
 1. Fetch latest master: `git fetch origin master`
 2. Rebase on top of it: `git rebase origin/master`
 
 If there are rebase conflicts, pause and show the user which files conflict. Do not auto-resolve conflicts.
+
+**Skip this step entirely if Scenario A from Step 1 (branch was just created from a freshly pulled master).**
+The branch already contains the latest master — no rebase needed.
 
 ---
 
