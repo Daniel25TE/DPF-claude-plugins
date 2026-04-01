@@ -1,0 +1,13 @@
+{
+  "name": "log-time",
+  "version": "1.0.0",
+  "description": "Daily Jira time logger: see your last 7 days, pick a day, fill in time per task, and submit",
+  "keywords": [
+    "jira",
+    "time",
+    "worklog",
+    "productivity",
+    "daily",
+    "logging"
+  ]
+}

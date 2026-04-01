@@ -17,6 +17,17 @@
       },
       "source": "./plugins/ship-it",
       "category": "productivity"
+    },
+    {
+      "name": "log-time",
+      "description": "Daily Jira time logger: see your last 7 days, pick a day, fill in time per task, and submit",
+      "version": "1.0.0",
+      "author": {
+        "name": "DPF Team",
+        "email": ""
+      },
+      "source": "./plugins/log-time",
+      "category": "productivity"
     }
   ]
 }

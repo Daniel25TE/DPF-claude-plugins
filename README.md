@@ -7,6 +7,7 @@ Internal Claude Code plugin marketplace for the DPF team.
 | Plugin | Description |
 |---|---|
 | `ship-it` | Full PR workflow: branch, commit, rebase, push, open PR, post to Slack |
+| `log-time` | Daily Jira time logger: see your last 7 days, pick a day, fill in time per task, and submit |
 
 ## Setup (one-time per machine)
 
