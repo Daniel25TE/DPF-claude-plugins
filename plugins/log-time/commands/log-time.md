@@ -9,6 +9,7 @@ allowed-tools:
   - mcp__atlassian__getAccessibleAtlassianResources
   - mcp__atlassian__atlassianUserInfo
   - mcp__atlassian__searchJiraIssuesUsingJql
+  - mcp__atlassian__getJiraIssue
   - mcp__atlassian__addWorklogToJiraIssue
 ---
 
@@ -36,8 +37,8 @@ For each day, run this JQL to find issues where the user logged time on that spe
 worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
 ```
 
-Use `fields=["summary", "timespent", "worklog"]` in the request to get worklog entries directly.
-Filter the worklogs in the `worklog.worklogs` array where:
+For each issue returned, call `getJiraIssue` with `expand=worklogs` to retrieve worklog entries.
+Filter the worklogs where:
 - `author.accountId` matches the user's accountId
 - The `started` field date matches the target day
 
@@ -47,7 +48,7 @@ If no worklogs found for a day, show `── no entries`.
 
 ---
 
-### STEP 2 — Display 7-day summary and pick a day
+### STEP 2 — Display 7-day summary
 
 Show the following formatted block. Replace placeholders with real dates and totals:
 
@@ -69,18 +70,13 @@ Show the following formatted block. Replace placeholders with real dates and tot
      7.  Today ([Day])    [Mon DD]     [Xh Ym | ── no entries]
 ```
 
-Then use `AskUserQuestion` to let the user pick a day. Build the options as follows:
-- Compute today + the last 3 weekdays before today (skip Saturday and Sunday) — this gives exactly 4 options.
-- Order them from oldest to most recent, with today last.
-- For each option:
-  - `label`: `[Day name], [Mon DD]` (e.g. `Thursday, Mar 26`) — use `Today ([Day name])` for the current day
-  - `description`: `Logged so far: [Xh Ym | ── no entries]` — append ` · ✓ entries added` if the user already logged for this day in the current session
-
-Use `AskUserQuestion` with:
-- Question: "Which day do you want to log time for?"
-- The 4 computed options above
+Then ask the user:
+> "Which day do you want to log time for? Type a number (1–7):"
 
 Wait for the user's response before continuing.
+
+Keep track of which days the user has already logged entries for in this session
+(mark them as `✓ entries added` in subsequent views of this summary).
 
 ---
 
@@ -166,8 +162,8 @@ Use `AskUserQuestion` with:
   - "No, proceed to submit"
 
 If "Yes, log another day":
-- Return to STEP 2, showing the 7-day summary again and the day-picker menu
-- Mark days that already have entries in this session with `✓ entries added` in the option descriptions
+- Return to STEP 2, showing the 7-day summary again
+- Mark days that already have entries in this session with `✓ entries added`
 - Collect entries for the new selected day
 - Accumulate all entries across days
 
