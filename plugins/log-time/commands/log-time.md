@@ -6,10 +6,10 @@ description: >
   collects time entries via plain text input, supports multi-day logging, shows a
   per-day confirmation summary, and submits worklogs to Jira.
 allowed-tools:
+  - Bash
   - mcp__atlassian__getAccessibleAtlassianResources
   - mcp__atlassian__atlassianUserInfo
   - mcp__atlassian__searchJiraIssuesUsingJql
-  - mcp__atlassian__getJiraIssue
   - mcp__atlassian__addWorklogToJiraIssue
 ---
 
@@ -21,10 +21,13 @@ You are helping the user log their daily work hours in Jira tasks. Follow each s
 
 ### STEP 0 — Setup
 
+Run `date '+%A %Y-%m-%d'` via Bash to get today's weekday name and ISO date.
+**Use this output as the authoritative source for today's date and day name — never calculate the weekday manually from a date string.**
+
 Call `getAccessibleAtlassianResources` to get the `cloudId`.
 Call `atlassianUserInfo` to get the user's `accountId` and display name.
 
-Store both values — you will need them throughout.
+Store all three values — you will need them throughout.
 
 ---
 
@@ -32,13 +35,15 @@ Store both values — you will need them throughout.
 
 Calculate the dates for the last 7 calendar days including today (today = day 7).
 
-For each day, run this JQL to find issues where the user logged time on that specific date:
+For each day, run this JQL to find issues where the user logged time on that specific date,
+and include `"worklog"` in the fields array — this returns worklog entries inline, avoiding
+a separate `getJiraIssue` call (which does NOT return worklog data through the MCP wrapper):
 ```
-worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
+JQL:    worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
+fields: ["summary", "timespent", "worklog"]
 ```
 
-For each issue returned, call `getJiraIssue` with `fields=["worklog"]` to retrieve worklog entries.
-Filter the worklogs where:
+Filter the returned `worklog.worklogs` array on each issue where:
 - `author.accountId` matches the user's accountId
 - The `started` field date matches the target day
 
@@ -82,9 +87,9 @@ Keep track of which days the user has already logged entries for in this session
 
 ### STEP 3 — Fetch assigned tasks
 
-Run this JQL to get the user's active subtasks only:
+Run this JQL to get the user's active tasks:
 ```
-assignee = currentUser() AND issuetype = Sub-Task AND status in ("To Do", "In Progress", "In Test") ORDER BY updated DESC
+assignee = currentUser() AND status in ("To Do", "In Progress", "In Test") ORDER BY updated DESC
 ```
 
 Request these fields: `summary`, `status`, `timeoriginalestimate`, `timespent`, `timetracking`, `issuetype`.
