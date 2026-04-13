@@ -6,6 +6,7 @@ description: >
   collects time entries via plain text input, supports multi-day logging, shows a
   per-day confirmation summary, and submits worklogs to Jira.
 allowed-tools:
+  - Bash
   - mcp__atlassian__getAccessibleAtlassianResources
   - mcp__atlassian__atlassianUserInfo
   - mcp__atlassian__searchJiraIssuesUsingJql
@@ -21,10 +22,13 @@ You are helping the user log their daily work hours in Jira tasks. Follow each s
 
 ### STEP 0 — Setup
 
+Run `date '+%A %Y-%m-%d'` via Bash to get today's weekday name and ISO date.
+**Use this output as the authoritative source for today's date and day name — never calculate the weekday manually from a date string.**
+
 Call `getAccessibleAtlassianResources` to get the `cloudId`.
 Call `atlassianUserInfo` to get the user's `accountId` and display name.
 
-Store both values — you will need them throughout.
+Store all three values — you will need them throughout.
 
 ---
 
