@@ -37,7 +37,7 @@ For each day, run this JQL to find issues where the user logged time on that spe
 worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
 ```
 
-For each issue returned, call `getJiraIssue` with `expand=worklogs` to retrieve worklog entries.
+For each issue returned, call `getJiraIssue` with `fields=["worklog"]` to retrieve worklog entries.
 Filter the worklogs where:
 - `author.accountId` matches the user's accountId
 - The `started` field date matches the target day

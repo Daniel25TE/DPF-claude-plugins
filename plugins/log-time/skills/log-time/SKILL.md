@@ -10,7 +10,6 @@ allowed-tools:
   - mcp__atlassian__getAccessibleAtlassianResources
   - mcp__atlassian__atlassianUserInfo
   - mcp__atlassian__searchJiraIssuesUsingJql
-  - mcp__atlassian__getJiraIssue
   - mcp__atlassian__addWorklogToJiraIssue
 ---
 
@@ -36,13 +35,15 @@ Store all three values — you will need them throughout.
 
 Calculate the dates for the last 7 calendar days including today (today = day 7).
 
-For each day, run this JQL to find issues where the user logged time on that specific date:
+For each day, run this JQL to find issues where the user logged time on that specific date,
+and include `"worklog"` in the fields array — this returns worklog entries inline, avoiding
+a separate `getJiraIssue` call (which does NOT return worklog data through the MCP wrapper):
 ```
-worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
+JQL:    worklogAuthor = currentUser() AND worklogDate = "YYYY-MM-DD"
+fields: ["summary", "timespent", "worklog"]
 ```
 
-For each issue returned, call `getJiraIssue` with `expand=worklogs` to retrieve worklog entries.
-Filter the worklogs where:
+Filter the returned `worklog.worklogs` array on each issue where:
 - `author.accountId` matches the user's accountId
 - The `started` field date matches the target day
 
